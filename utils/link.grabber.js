@@ -1,6 +1,6 @@
 import { load } from "cheerio";
 import puppeteer from "puppeteer-core";
-import url from "./newspaper.links";
+import url from "./newspaper.links.js";
 
 export const getGuardianUrl = async () => {
   const browser = await puppeteer.launch({
@@ -20,3 +20,4 @@ export const getGuardianUrl = async () => {
   await browser.close();
   return imgLink;
 };
+
