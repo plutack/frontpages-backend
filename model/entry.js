@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import moment from "moment";
-import { newspaperSchema } from "./newspaper.js";
+import newspaperSchema from "./newspaper.js";
 
 const entrySchema = new mongoose.Schema({
   date: {
     type: Date,
     required: true,
     unique: true,
-    default: moment().format("MMMM Do YYYY"),
+    default: Date.now(),
   },
   newspapers: {
     type: [newspaperSchema],
@@ -15,6 +15,6 @@ const entrySchema = new mongoose.Schema({
   },
 });
 
-const Newspaper = mongoose.model("Newspaper", newspaperSchema);
+const Entry = mongoose.model("Entry", entrySchema);
 
-export default Newspaper;
+export default Entry;

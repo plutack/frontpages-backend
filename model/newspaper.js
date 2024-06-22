@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const newspaperSchema = new mongoose.Schema({
+const newspaperSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -12,6 +12,4 @@ export const newspaperSchema = new mongoose.Schema({
   },
 });
 
-const Newspaper = mongoose.model("Newspaper", newspaperSchema);
-
-export default Newspaper;
+export default newspaperSchema;

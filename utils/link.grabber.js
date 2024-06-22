@@ -1,6 +1,6 @@
 import { load } from "cheerio";
 import puppeteer from "puppeteer-core";
-import url from "./newspaper.links.js";
+import newspaperData from "./newspaper.links.js";
 
 export const getGuardianUrl = async () => {
   const browser = await puppeteer.launch({
@@ -9,8 +9,9 @@ export const getGuardianUrl = async () => {
   const page = await browser.newPage();
 
   // Navigate the page to a URL.
-  await page.goto(url.guardian, {
-    waitUntil: "networkidle2",
+  await page.goto(newspaperData.guardian, {
+    waitUntil: "load",
+    timeout: 0
   });
 
   const renderedHtml = await page.content();
@@ -20,4 +21,3 @@ export const getGuardianUrl = async () => {
   await browser.close();
   return imgLink;
 };
-
