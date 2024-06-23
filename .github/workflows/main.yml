@@ -1,9 +1,11 @@
 name: Lint and Test Code
 on:
   push:
-    branches: [ "develop" ]
+    branches: 
+      - 'develop'
   pull_request:
-    branches: []
+    branches: 
+      - '**'
 jobs:
   lint:
     runs-on: ubuntu-latest
