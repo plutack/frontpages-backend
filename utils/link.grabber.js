@@ -56,7 +56,7 @@ export const getDTrustUrl = async () => {
   const $ = load(renderedHtml);
 
   let imgLink = $(
-    'img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]'
+    'img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]',
   ).attr("src");
   await browser.close();
   imgLink = `https:${imgLink.replace("-scaled", "")}`;

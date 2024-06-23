@@ -21,7 +21,7 @@ const newspapers = [];
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
   const uploadedLink = await uploadImg(
     newspaperName,
-    await urlGrabberFunction()
+    await urlGrabberFunction(),
   );
   console.log(uploadedLink);
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
@@ -37,7 +37,7 @@ const job = new CronJob(time, async () => {
           // await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
-          await saveToArray(newspaperName, getTribuneUrl); 
+          await saveToArray(newspaperName, getTribuneUrl);
           break;
         case "daily_trust":
           // await saveToArray(newspaperName, getDTrustUrl);
