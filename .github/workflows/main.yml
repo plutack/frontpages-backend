@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: 
       - '**'
-permissions: read
+permissions: read-all
 jobs:
   lint:
     runs-on: ubuntu-latest
