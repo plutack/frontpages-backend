@@ -11,7 +11,7 @@ try {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
   job.start();
-  console.log("cron job started")
+  console.log("cron job started");
   app.listen(port, () => {
     console.log(`App started on port: ${port}`);
   });

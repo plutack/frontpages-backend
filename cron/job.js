@@ -30,7 +30,7 @@ const job = new CronJob(time, async () => {
           break;
       }
     }
-    const entry = new Entry({ newspapers: newspapers });
+    const entry = new Entry({ newspapers });
     const response = await entry.save();
     console.log(response);
   } catch (error) {
