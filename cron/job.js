@@ -16,14 +16,13 @@ import "dotenv/config";
 const time = process.env.CRON_TIME;
 
 const newspaperNames = Object.keys(newspaperData);
-const newspapers = [];
+let newspapers = [];
 
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
   const uploadedLink = await uploadImg(
     newspaperName,
-    await urlGrabberFunction(),
+    await urlGrabberFunction()
   );
-  console.log(uploadedLink);
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
   newspapers.push(newspaperInfo);
 };
@@ -37,13 +36,13 @@ const job = new CronJob(time, async () => {
           // await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
-          await saveToArray(newspaperName, getTribuneUrl);
+          // await saveToArray(newspaperName, getTribuneUrl);
           break;
         case "daily_trust":
-          // await saveToArray(newspaperName, getDTrustUrl);
+          await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          // await saveToArray(newspaperName, getVanguardUrl); // problem
+          // await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
           // await saveToArray(newspaperName, getSportUrl);
@@ -54,10 +53,12 @@ const job = new CronJob(time, async () => {
     }
     const entry = new Entry({ newspapers });
     console.log(entry);
-    // const response = await entry.save();
-    // console.log(response);
-  } catch (error) {
-    console.error(error);
+    const response = await entry.save();
+    console.log(response);
+  } catch (err) {
+    console.error(`${err.name}:${err.message}`);
+  } finally {
+    newspapers = [];
   }
 });
 
