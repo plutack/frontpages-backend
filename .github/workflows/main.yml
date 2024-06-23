@@ -18,7 +18,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVASCRIPT_DEFAULT_STYLE: prettier
-          JAVASCRIPT_ES_CONFIG_FILE: eslint.config.js
+          DEFAULT_BRANCH: {{ github.ref }}
           
   test:
     runs-on: ubuntu-latest
