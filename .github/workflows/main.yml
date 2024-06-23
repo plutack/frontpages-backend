@@ -20,7 +20,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVASCRIPT_DEFAULT_STYLE: prettier
-          DEFAULT_BRANCH: {{ github.ref }}
+          DEFAULT_BRANCH: ${{ github.ref }}
           
   test:
     runs-on: ubuntu-latest
