@@ -1,8 +1,5 @@
 name: Lint and Test Code
 on:
-  push:
-    branches: 
-      - 'develop'
   pull_request:
     branches: 
       - '**'
@@ -20,7 +17,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVASCRIPT_DEFAULT_STYLE: prettier
-          DEFAULT_BRANCH: ${{ github.ref }}
+          DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
           
   test:
     runs-on: ubuntu-latest
