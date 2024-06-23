@@ -3,13 +3,10 @@ on:
   pull_request:
     branches: 
       - '**'
-permissions: read-all
+permissions: read
 jobs:
   lint:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
