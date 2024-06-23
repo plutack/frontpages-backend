@@ -4,7 +4,7 @@ import newspaperData from './newspaper.links.js'
 
 export const getGuardianUrl = async () => {
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser'
+    executablePath: process.env.CHROME_BINARY_PATH
   })
   const page = await browser.newPage()
 
