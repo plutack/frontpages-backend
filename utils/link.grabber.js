@@ -61,7 +61,7 @@ export const getDTrustUrl = async () => {
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
     let imgLink = $(
-      'div.wp-block-themepunch-revslider img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]'
+      'div.wp-block-themepunch-revslider img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]',
     ).attr("src");
     console.log(imgLink);
     imgLink = `https:${imgLink.replace("-scaled", "")}`;
@@ -106,7 +106,7 @@ export const getSportUrl = async () => {
     });
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
-    let imgLink = $('head link[rel="image_src"]').attr("href");
+    const imgLink = $('head link[rel="image_src"]').attr("href");
     imgLink.replace(/\/\d+\/1\/\d+x\d+\/.*\.jpg$/, "/1135x1600/");
     return imgLink;
   } catch (err) {
