@@ -4,14 +4,22 @@ import newspaperSchema from "./newspaper.js";
 
 const entrySchema = new mongoose.Schema({
   date: {
-    type: Date,
+    type: String,
     required: true,
     unique: true,
-    default: Date.now(),
+    default: moment().format("YYYY-MM-DD"),
   },
   newspapers: {
     type: [newspaperSchema],
     required: true,
+  },
+});
+
+//set what is returned when queried
+entrySchema.set("toJSON", {
+  versionKey: false,
+  transform: (_, ret) => {
+    delete ret._id;
   },
 });
 
