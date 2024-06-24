@@ -12,4 +12,12 @@ const newspaperSchema = new mongoose.Schema({
   },
 });
 
+//set what is returned when queried
+newspaperSchema.set("toJSON", {
+  versionKey: false,
+  transform: (_, ret) => {
+    delete ret._id;
+  },
+});
+
 export default newspaperSchema;
