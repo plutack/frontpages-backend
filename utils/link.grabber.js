@@ -61,7 +61,7 @@ export const getDTrustUrl = async () => {
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
     let imgLink = $(
-      'div.wp-block-themepunch-revslider img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]'
+      'div.wp-block-themepunch-revslider img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]',
     ).attr("src");
     console.log(imgLink);
     imgLink = `https:${imgLink.replace("-scaled", "")}`;
