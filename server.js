@@ -15,4 +15,6 @@ try {
   app.listen(port, () => {
     console.log(`App started on port: ${port}`);
   });
-} catch (error) {}
+} catch (err) {
+  console.log("Error", err);
+}
