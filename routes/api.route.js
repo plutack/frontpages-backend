@@ -6,8 +6,8 @@ const apiRoute = Router();
 
 apiRoute.get("/api/today", async (req, res) => {
   try {
-    const date = new Date();
-    const data = await Entry.findOne({
+    let date = new Date();
+    let data = await Entry.findOne({
       date: moment(date).format("YYYY-MM-DD"),
     });
     if (data) {
