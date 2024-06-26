@@ -20,7 +20,7 @@ let newspapers = [];
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
   const uploadedLink = await uploadImg(
     newspaperName,
-    await urlGrabberFunction()
+    await urlGrabberFunction(),
   );
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
   newspapers.push(newspaperInfo);
