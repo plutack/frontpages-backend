@@ -29,11 +29,12 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
 
 const job = new CronJob(time, async () => {
   try {
+    console.log(newspapers)
     console.log("started fetching data");
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
-          await saveToArray(newspaperName, getGuardianUrl);
+          // await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
           await saveToArray(newspaperName, getTribuneUrl);
@@ -51,7 +52,8 @@ const job = new CronJob(time, async () => {
           break;
       }
     }
-    const entry = new Entry({ newspapers });
+    const entry = new Entry();
+    entry.newspapers = newspapers
     console.log(entry);
     const response = await entry.save();
     console.log(response);

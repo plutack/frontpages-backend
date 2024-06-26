@@ -4,7 +4,7 @@ const newspaperSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
   },
   link: {
     type: String,
