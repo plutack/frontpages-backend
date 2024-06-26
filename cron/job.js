@@ -8,7 +8,6 @@ import {
   getSportUrl,
 } from "../utils/link.grabber.js";
 import { uploadImg } from "../utils/cloudinary.operation.js";
-import Newspaper from "../model/newspaper.js";
 import Entry from "../model/entry.js";
 
 import "dotenv/config";
@@ -21,7 +20,7 @@ let newspapers = [];
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
   const uploadedLink = await uploadImg(
     newspaperName,
-    await urlGrabberFunction(),
+    await urlGrabberFunction()
   );
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
   newspapers.push(newspaperInfo);
@@ -29,12 +28,12 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
 
 const job = new CronJob(time, async () => {
   try {
-    console.log(newspapers)
+    console.log(newspapers);
     console.log("started fetching data");
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
-          // await saveToArray(newspaperName, getGuardianUrl);
+          await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
           await saveToArray(newspaperName, getTribuneUrl);
@@ -43,7 +42,7 @@ const job = new CronJob(time, async () => {
           await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          // await saveToArray(newspaperName, getVanguardUrl);
+          await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
           await saveToArray(newspaperName, getSportUrl);
@@ -53,7 +52,7 @@ const job = new CronJob(time, async () => {
       }
     }
     const entry = new Entry();
-    entry.newspapers = newspapers
+    entry.newspapers = newspapers;
     console.log(entry);
     const response = await entry.save();
     console.log(response);
