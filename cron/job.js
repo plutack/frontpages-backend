@@ -33,19 +33,19 @@ const job = new CronJob(time, async () => {
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
-          await saveToArray(newspaperName, getGuardianUrl);
+          // await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
-          await saveToArray(newspaperName, getTribuneUrl);
+          // await saveToArray(newspaperName, getTribuneUrl);
           break;
         case "daily_trust":
           await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          await saveToArray(newspaperName, getVanguardUrl);
+          // await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
-          await saveToArray(newspaperName, getSportUrl);
+          // await saveToArray(newspaperName, getSportUrl);
           break;
         default:
           break;
@@ -63,4 +63,4 @@ const job = new CronJob(time, async () => {
   }
 });
 
-export default job;
+job.start();
