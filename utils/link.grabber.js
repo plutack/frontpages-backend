@@ -4,25 +4,17 @@ import newspaperData from "./newspaper.links.js";
 import "dotenv/config";
 
 const chromeBinaryPath = process.env.CHROME_BINARY_PATH;
-
 export const getGuardianUrl = async () => {
-  const browser = await puppeteer.launch({
-    executablePath: chromeBinaryPath,
-  });
   try {
-    const page = await browser.newPage();
-    await page.goto(newspaperData.guardian, {
-      waitUntil: "domcontentloaded",
-      timeout: 0,
-    });
-    const renderedHtml = await page.content();
-    const $ = load(renderedHtml);
-    const imgLink = $("img.pdf-thumbnail-preview").attr("src");
-    return imgLink;
+    const response = await fetch(
+      "https://epaperbackend.guardian.ng/api/papers/today-paper",
+    );
+
+    const { result } = await response.json();
+    console.log(result);
+    return result;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
-  } finally {
-    await browser.close();
   }
 };
 
