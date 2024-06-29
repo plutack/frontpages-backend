@@ -8,7 +8,6 @@
     "start:cron": "node ./cron/job.js",
     "start:server": "node ./server.js",
     "start": "concurrently 'npm run start:cron' 'npm run start:server'"
-
   },
   "keywords": [],
   "author": "",
@@ -25,7 +24,8 @@
     "mongoose": "^8.4.3",
     "node-html-parser": "^6.1.13",
     "puppeteer": "^22.12.0",
-    "puppeteer-core": "^22.12.0"
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",

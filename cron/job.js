@@ -18,10 +18,11 @@ const newspaperNames = Object.keys(newspaperData);
 let newspapers = [];
 
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
-  const uploadedLink = await uploadImg(
-    newspaperName,
-    await urlGrabberFunction(),
-  );
+  const imgUrl = await urlGrabberFunction();
+  if (!imgUrl) {
+    return;
+  }
+  const uploadedLink = await uploadImg(newspaperName, imgUrl);
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
   newspapers.push(newspaperInfo);
 };
@@ -33,19 +34,19 @@ const job = new CronJob(time, async () => {
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
-          // await saveToArray(newspaperName, getGuardianUrl);
+          await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
-          // await saveToArray(newspaperName, getTribuneUrl);
+          await saveToArray(newspaperName, getTribuneUrl);
           break;
         case "daily_trust":
           await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          // await saveToArray(newspaperName, getVanguardUrl);
+          await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
-          // await saveToArray(newspaperName, getSportUrl);
+          await saveToArray(newspaperName, getSportUrl);
           break;
         default:
           break;
