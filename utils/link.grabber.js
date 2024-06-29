@@ -1,7 +1,10 @@
 import { load } from "cheerio";
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer-extra";
+import stealthPlugin from "puppeteer-extra-plugin-stealth";
 import newspaperData from "./newspaper.links.js";
 import "dotenv/config";
+
+puppeteer.use(stealthPlugin());
 
 const chromeBinaryPath = process.env.CHROME_BINARY_PATH;
 export const getGuardianUrl = async () => {
@@ -11,7 +14,6 @@ export const getGuardianUrl = async () => {
     );
 
     const { result } = await response.json();
-    console.log(result);
     return result;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
@@ -52,11 +54,9 @@ export const getDTrustUrl = async () => {
     page.setJavaScriptEnabled(false);
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
-    let imgLink = $(
-      'div.wp-block-themepunch-revslider img[fetchpriority="high"][decoding="async"][class="tp-rs-img rs-lazyload"]',
-    ).attr("src");
-    console.log(imgLink);
-    imgLink = `https:${imgLink.replace("-scaled", "")}`;
+    const elements = $(".site-branding.e-paper-header-logo");
+    const secondElement = elements.eq(1);
+    const imgLink = secondElement.find("img").attr("src");
     return imgLink;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
