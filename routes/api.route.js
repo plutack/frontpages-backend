@@ -1,8 +1,13 @@
 import { Router } from "express";
 import Entry from "../model/entry.js";
 import moment from "moment";
+import { join } from "node:path";
 
 const apiRoute = Router();
+
+apiRoute.get("/", (req, res) => {
+  res.send(join(import.meta.dirname, "..", "public", "index.html"));
+});
 
 apiRoute.get("/api/today", async (req, res) => {
   try {
