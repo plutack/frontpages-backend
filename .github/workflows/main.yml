@@ -19,7 +19,7 @@ jobs:
           JAVASCRIPT_DEFAULT_STYLE: prettier
           DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
           ESLINT_USE_FLAT_CONFIG: false
-          VALIDATE_JSCPD: false 
+          VALIDATE_JSCPD: false
 
   test:
     runs-on: ubuntu-latest
