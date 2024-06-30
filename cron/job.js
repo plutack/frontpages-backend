@@ -33,7 +33,8 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
   console.log("newspaper saved", newspaperInfo);
 };
 
-async function saveOrUpdateEntry() {
+async function saveOrUpdateEntry(newspapers) {
+  console.log("newapapers array", newspapers);
   const dbConnection = await mongoose.connect(uri, {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
@@ -42,10 +43,14 @@ async function saveOrUpdateEntry() {
 
     if (!existingEntry) {
       const entry = new Entry({ date, newspapers });
+      entry.newspapers = newspapers;
       await entry.save();
       console.log(`New entry for date: ${date} saved to database`);
     } else {
-      await Entry.findOneAndUpdate({ date }, { newspapers });
+      await Entry.findOneAndUpdate(
+        { date },
+        { $addToSet: { newspapers: { $each: newspapers } } },
+      );
       console.log(`Existing entry for date: ${date}  updated in database`);
     }
   } catch (error) {
@@ -65,22 +70,22 @@ const job = new CronJob(time, async () => {
           await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
-          // await saveToArray(newspaperName, getTribuneUrl);
+          await saveToArray(newspaperName, getTribuneUrl);
           break;
         case "daily_trust":
-          // await saveToArray(newspaperName, getDTrustUrl);
+          await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          // await saveToArray(newspaperName, getVanguardUrl);
+          await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
-          // await saveToArray(newspaperName, getSportUrl);
+          await saveToArray(newspaperName, getSportUrl);
           break;
         default:
           break;
       }
     }
-    saveOrUpdateEntry();
+    saveOrUpdateEntry(newspapers);
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
