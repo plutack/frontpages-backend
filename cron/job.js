@@ -34,23 +34,30 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
 };
 
 async function saveOrUpdateEntry(newspapers) {
-  console.log("newapapers array", newspapers);
   const dbConnection = await mongoose.connect(uri, {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
   try {
     const existingEntry = await Entry.findOne({ date });
+    console.log(existingEntry);
 
     if (!existingEntry) {
       const entry = new Entry({ date, newspapers });
       entry.newspapers = newspapers;
       await entry.save();
       console.log(`New entry for date: ${date} saved to database`);
+      return;
     } else {
-      await Entry.findOneAndUpdate(
-        { date },
-        { $addToSet: { newspapers: { $each: newspapers } } },
-      );
+      for (const newspaper of newspapers) {
+        if (
+          !existingEntry.newspapers.some(
+            (existingNewspaper) => existingNewspaper.name === newspaper.name,
+          )
+        ) {
+          existingEntry.newspapers.push(newspaper);
+        }
+      }
+      await existingEntry.save();
       console.log(`Existing entry for date: ${date}  updated in database`);
     }
   } catch (error) {
