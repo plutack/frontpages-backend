@@ -103,9 +103,7 @@ export const getSportUrl = async () => {
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
     let imgLink = $('head link[rel="image_src"]').attr("href");
-    console.log(imgLink)
     imgLink = imgLink.replace(/\/\d+x\d+\/.*\.jpg$/, "/1135x1600/");
-    console.log(imgLink);
     return imgLink;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
