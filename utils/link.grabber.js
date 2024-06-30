@@ -59,7 +59,6 @@ export const getDTrustUrl = async () => {
     const img = allImg.eq(1);
     let imgLink = img.attr("data-lazyload");
     imgLink = `https:${imgLink.replace("-scaled", "")}`;
-    console.log(imgLink);
     return imgLink;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
@@ -103,8 +102,10 @@ export const getSportUrl = async () => {
     });
     const renderedHtml = await page.content();
     const $ = load(renderedHtml);
-    const imgLink = $('head link[rel="image_src"]').attr("href");
-    imgLink.replace(/\/\d+\/1\/\d+x\d+\/.*\.jpg$/, "/1135x1600/");
+    let imgLink = $('head link[rel="image_src"]').attr("href");
+    console.log(imgLink)
+    imgLink = imgLink.replace(/\/\d+x\d+\/.*\.jpg$/, "/1135x1600/");
+    console.log(imgLink);
     return imgLink;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
