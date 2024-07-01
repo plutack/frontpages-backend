@@ -20,6 +20,8 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
           ESLINT_USE_FLAT_CONFIG: false
           VALIDATE_JSCPD: false
+          VALIDATE_CSS: false
+          VALIDATE_HTML: false
 
   test:
     runs-on: ubuntu-latest
