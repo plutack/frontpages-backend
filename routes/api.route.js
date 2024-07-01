@@ -15,11 +15,13 @@ apiRoute.get("/api/today", async (req, res) => {
     let data = await Entry.findOne({
       date: moment(date).format("YYYY-MM-DD"),
     });
+    console.log(data);
     if (data) {
       return res.json(data);
     }
     // send previous day data
-    date.setDate(date.getDate - 1);
+    date.setDate(date.getDate() - 1);
+    console.log(date);
     data = await Entry.findOne({ date: moment(date).format("YYYY-MM-DD") });
     if (data) {
       return res.json(data);
