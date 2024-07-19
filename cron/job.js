@@ -13,6 +13,7 @@ import { uploadImg } from "../utils/cloudinary.operation.js";
 import Entry from "../model/entry.js";
 
 import "dotenv/config";
+import Newspaper from "../model/newspaper.js";
 
 const time = process.env.CRON_TIME;
 const uri = process.env.MONGODB_URL;
@@ -28,44 +29,63 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
     return;
   }
   const uploadedLink = await uploadImg(newspaperName, imgUrl);
+  if (!uploadedLink) {
+    console.log(`No link for ${newspaperName}`);
+    return;
+  }
   const newspaperInfo = { name: newspaperName, link: uploadedLink };
-  newspapers.push(newspaperInfo);
-  console.log("newspaper saved", newspaperInfo);
+  const newspaper = new Newspaper(newspaperInfo);
+  newspapers.push(newspaper);
+  console.log(newspapers);
 };
 
-async function saveOrUpdateEntry(newspapers) {
+const saveOrUpdateEntry = async (newspapers) => {
   const dbConnection = await mongoose.connect(uri, {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
   try {
-    const existingEntry = await Entry.findOne({ date });
+    const existingEntry = await Entry.findOne({ date }).populate("newspapers");
     console.log(existingEntry);
 
     if (!existingEntry) {
-      const entry = new Entry({ date, newspapers });
-      entry.newspapers = newspapers;
+      const newspapersID = newspapers.map((newspaper) => newspaper._id);
+      for (const newspaper of newspapers) {
+        await newspaper.save();
+        console.log(`newspaper: ${newspaper.name} saved`);
+      }
+      const entry = new Entry({ newspapersID });
       await entry.save();
       console.log(`New entry for date: ${date} saved to database`);
       return;
     } else {
+      const extraNewspaperID = [];
       for (const newspaper of newspapers) {
+        console.log("existing newspaprers", existingEntry.newspapers);
         if (
           !existingEntry.newspapers.some(
             (existingNewspaper) => existingNewspaper.name === newspaper.name,
           )
         ) {
-          existingEntry.newspapers.push(newspaper);
+          await newspaper.save();
+          extraNewspaperID.push(newspaper._id);
         }
       }
-      await existingEntry.save();
-      console.log(`Existing entry for date: ${date}  updated in database`);
+      if (extraNewspaperID.length) {
+        await existingEntry.updateOne(
+          {},
+          { $push: { newspapers: { $each: extraNewspaperID } } },
+        );
+        console.log(`Existing entry for date: ${date}  updated in database`);
+        return;
+      }
+      console.log(`No update made on existing entry for date: ${date}`);
     }
   } catch (error) {
     console.error("Error connecting to database or saving entry:", error);
   } finally {
     await dbConnection.disconnect();
   }
-}
+};
 
 const job = new CronJob(time, async () => {
   console.log("cron job started");
@@ -74,7 +94,7 @@ const job = new CronJob(time, async () => {
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
-          await saveToArray(newspaperName, getGuardianUrl);
+          // await saveToArray(newspapegit rName, getGuardianUrl);
           break;
         case "tribune":
           await saveToArray(newspaperName, getTribuneUrl);
@@ -92,7 +112,7 @@ const job = new CronJob(time, async () => {
           break;
       }
     }
-    saveOrUpdateEntry(newspapers);
+    await saveOrUpdateEntry(newspapers);
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {

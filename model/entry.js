@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import moment from "moment";
-import newspaperSchema from "./newspaper.js";
+import Newspaper from "./newspaper.js";
 
 const entrySchema = new mongoose.Schema({
   date: {
     type: String,
     required: true,
-    unique: true,
     default: moment().format("YYYY-MM-DD"),
   },
   newspapers: {
-    type: [newspaperSchema],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Newspaper,
     required: true,
   },
 });

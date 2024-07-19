@@ -1,6 +1,12 @@
+import moment from "moment";
 import mongoose from "mongoose";
 
 const newspaperSchema = new mongoose.Schema({
+  date: {
+    type: String,
+    required: true,
+    default: moment().format("YYYY-MM-DD"),
+  },
   name: {
     type: String,
     required: true,
@@ -20,4 +26,6 @@ newspaperSchema.set("toJSON", {
   },
 });
 
-export default newspaperSchema;
+const Newspaper = mongoose.model("Newspaper", newspaperSchema);
+
+export default Newspaper;
