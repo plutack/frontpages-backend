@@ -9,7 +9,7 @@ const entrySchema = new mongoose.Schema({
     default: moment().format("YYYY-MM-DD"),
   },
   newspapers: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: Newspaper,
     required: true,
   },
@@ -19,7 +19,12 @@ const entrySchema = new mongoose.Schema({
 entrySchema.set("toJSON", {
   versionKey: false,
   transform: (_, ret) => {
+    ret.id = ret._id.toString();
     delete ret._id;
+    return {
+      id: ret.id,
+      ...ret,
+    };
   },
 });
 

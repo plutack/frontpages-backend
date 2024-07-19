@@ -45,15 +45,20 @@ const saveOrUpdateEntry = async (newspapers) => {
   });
   try {
     const existingEntry = await Entry.findOne({ date }).populate("newspapers");
-    console.log(existingEntry);
+
+    console.log("existingEntry", existingEntry.toJSON(), typeof existingEntry);
 
     if (!existingEntry) {
-      const newspapersID = newspapers.map((newspaper) => newspaper._id);
+      const newspapersID = [];
       for (const newspaper of newspapers) {
-        await newspaper.save();
+        const { id } = await newspaper.save();
+        newspapersID.push({ id, name: newspaper.name });
         console.log(`newspaper: ${newspaper.name} saved`);
       }
-      const entry = new Entry({ newspapersID });
+      const entry = new Entry({
+        date,
+        newspapers: newspapersID.map((newspaper) => newspaper.id),
+      });
       await entry.save();
       console.log(`New entry for date: ${date} saved to database`);
       return;
@@ -87,37 +92,37 @@ const saveOrUpdateEntry = async (newspapers) => {
   }
 };
 
-const job = new CronJob(time, async () => {
-  console.log("cron job started");
-  try {
-    console.log("started fetching data");
-    for (const newspaperName of newspaperNames) {
-      switch (newspaperName) {
-        case "guardian":
-          // await saveToArray(newspapegit rName, getGuardianUrl);
-          break;
-        case "tribune":
-          await saveToArray(newspaperName, getTribuneUrl);
-          break;
-        case "daily_trust":
-          await saveToArray(newspaperName, getDTrustUrl);
-          break;
-        case "vanguard":
-          await saveToArray(newspaperName, getVanguardUrl);
-          break;
-        case "complete_sports":
-          await saveToArray(newspaperName, getSportUrl);
-          break;
-        default:
-          break;
-      }
+// const job = new CronJob(time, async () => {
+console.log("cron job started");
+try {
+  console.log("started fetching data");
+  for (const newspaperName of newspaperNames) {
+    switch (newspaperName) {
+      case "guardian":
+        // await saveToArray(newspaperName, getGuardianUrl);
+        break;
+      case "tribune":
+        // await saveToArray(newspaperName, getTribuneUrl);
+        break;
+      case "daily_trust":
+        // await saveToArray(newspaperName, getDTrustUrl);
+        break;
+      case "vanguard":
+        // await saveToArray(newspaperName, getVanguardUrl);
+        break;
+      case "complete_sports":
+        // await saveToArray(newspaperName, getSportUrl);
+        break;
+      default:
+        break;
     }
-    await saveOrUpdateEntry(newspapers);
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
-  } finally {
-    newspapers = [];
   }
-});
+  await saveOrUpdateEntry(newspapers);
+} catch (err) {
+  console.error(`${err.name}:${err.message}`);
+} finally {
+  newspapers = [];
+}
+// });
 
-job.start();
+// job.start();
