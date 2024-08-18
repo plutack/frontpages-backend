@@ -12,9 +12,11 @@ export const getGuardianUrl = async () => {
     const response = await fetch(
       "https://epaperbackend.guardian.ng/api/papers/today-paper",
     );
-
-    const { result } = await response.json();
-    return result;
+    if (response.ok) {
+      const { result } = await response.json();
+      return result;
+    }
+    console.log(" bad fetch for Guardian");
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   }

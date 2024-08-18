@@ -2,4 +2,13 @@ node_modules/
 .env
 cloudinary.js
 test.js
-
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.log
+yarn.lock
+pnpm-lock.yaml
+.eslintcache
