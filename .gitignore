@@ -1,5 +1,4 @@
 node_modules/
-.env
 cloudinary.js
 test.js
 .DS_Store
@@ -12,3 +11,4 @@ Thumbs.db
 yarn.lock
 pnpm-lock.yaml
 .eslintcache
+config.bat
