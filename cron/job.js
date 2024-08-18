@@ -44,7 +44,7 @@ const saveOrUpdateEntry = async (newspapers) => {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
   try {
-    const existingEntry = await Entry.findOne({ date }).populate('newspapers');
+    const existingEntry = await Entry.findOne({ date }).populate("newspapers");
 
     if (!existingEntry) {
       const newspapersID = [];
@@ -62,7 +62,10 @@ const saveOrUpdateEntry = async (newspapers) => {
       return;
     } else {
       for (const newspaper of newspapers) {
-        const existingNewspaper = await Newspaper.findOne({ date, name: newspaper.name });
+        const existingNewspaper = await Newspaper.findOne({
+          date,
+          name: newspaper.name,
+        });
         if (existingNewspaper) {
           // Update existing newspaper
           existingNewspaper.link = newspaper.link;
@@ -84,36 +87,36 @@ const saveOrUpdateEntry = async (newspapers) => {
 };
 
 const job = new CronJob(time, async () => {
-console.log("cron job started");
-try {
-  console.log("started fetching data");
-  for (const newspaperName of newspaperNames) {
-    switch (newspaperName) {
-      case "guardian":
-        await saveToArray(newspaperName, getGuardianUrl);
-        break;
-      case "tribune":
-        await saveToArray(newspaperName, getTribuneUrl);
-        break;
-      case "daily_trust":
-        await saveToArray(newspaperName, getDTrustUrl);
-        break;
-      case "vanguard":
-        await saveToArray(newspaperName, getVanguardUrl);
-        break;
-      case "complete_sports":
-        await saveToArray(newspaperName, getSportUrl);
-        break;
-      default:
-        break;
+  console.log("cron job started");
+  try {
+    console.log("started fetching data", { time: new Date().toISOString() });
+    for (const newspaperName of newspaperNames) {
+      switch (newspaperName) {
+        case "guardian":
+          await saveToArray(newspaperName, getGuardianUrl);
+          break;
+        case "tribune":
+          await saveToArray(newspaperName, getTribuneUrl);
+          break;
+        case "daily_trust":
+          await saveToArray(newspaperName, getDTrustUrl);
+          break;
+        case "vanguard":
+          await saveToArray(newspaperName, getVanguardUrl);
+          break;
+        case "complete_sports":
+          await saveToArray(newspaperName, getSportUrl);
+          break;
+        default:
+          break;
+      }
     }
+    await saveOrUpdateEntry(newspapers);
+  } catch (err) {
+    console.error(`${err.name}:${err.message}`);
+  } finally {
+    newspapers = [];
   }
-  await saveOrUpdateEntry(newspapers);
-} catch (err) {
-  console.error(`${err.name}:${err.message}`);
-} finally {
-  newspapers = [];
-}
 });
 
-job.start();
+export default job;
