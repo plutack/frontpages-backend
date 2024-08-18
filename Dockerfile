@@ -24,7 +24,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Expose port 8000
-EXPOSE 8000
+EXPOSE 5000
 
 #CMD instruction to start your application
 CMD ["npm", "start"]
