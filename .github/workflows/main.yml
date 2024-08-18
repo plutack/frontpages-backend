@@ -1,41 +1,41 @@
-name: Lint and Test Code
-on:
-  pull_request:
-    branches:
-      - "**"
-permissions: read-all
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Super-linter
-        uses: super-linter/super-linter@v6.6.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JAVASCRIPT_DEFAULT_STYLE: prettier
-          DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
-          ESLINT_USE_FLAT_CONFIG: false
-          VALIDATE_JSCPD: false
-          VALIDATE_CSS: false
-          VALIDATE_HTML: false
+# name: Lint and Test Code
+# on:
+#   pull_request:
+#     branches:
+#       - "**"
+# permissions: read-all
+# jobs:
+#   lint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#       - name: Super-linter
+#         uses: super-linter/super-linter@v6.6.0
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           JAVASCRIPT_DEFAULT_STYLE: prettier
+#           DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
+#           ESLINT_USE_FLAT_CONFIG: false
+#           VALIDATE_JSCPD: false
+#           VALIDATE_CSS: false
+#           VALIDATE_HTML: false
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "lts/*"
 
-      - name: Checkout Code
-        uses: actions/checkout@v4
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install
+#       - name: Install dependencies
+#         run: npm install
 
-      - name: Run Tests
-        run: npm test
+#       - name: Run Tests
+#         run: npm test
