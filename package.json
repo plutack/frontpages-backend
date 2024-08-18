@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" ",
     "start:cron": "node ./cron/job.js",
     "start:server": "node ./server.js",
-    "start": "concurrently 'npm run start:cron' 'npm run start:server'"
+    "start": "concurrently 'npm run start:cron' 'npm run start:server'",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +37,11 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.2.0",
-    "globals": "^15.6.0"
+    "globals": "^15.6.0",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.9"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }

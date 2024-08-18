@@ -92,26 +92,26 @@ const saveOrUpdateEntry = async (newspapers) => {
   }
 };
 
-// const job = new CronJob(time, async () => {
+const job = new CronJob(time, async () => {
 console.log("cron job started");
 try {
   console.log("started fetching data");
   for (const newspaperName of newspaperNames) {
     switch (newspaperName) {
       case "guardian":
-        // await saveToArray(newspaperName, getGuardianUrl);
+        await saveToArray(newspaperName, getGuardianUrl);
         break;
       case "tribune":
-        // await saveToArray(newspaperName, getTribuneUrl);
+        await saveToArray(newspaperName, getTribuneUrl);
         break;
       case "daily_trust":
-        // await saveToArray(newspaperName, getDTrustUrl);
+        await saveToArray(newspaperName, getDTrustUrl);
         break;
       case "vanguard":
-        // await saveToArray(newspaperName, getVanguardUrl);
+        await saveToArray(newspaperName, getVanguardUrl);
         break;
       case "complete_sports":
-        // await saveToArray(newspaperName, getSportUrl);
+        await saveToArray(newspaperName, getSportUrl);
         break;
       default:
         break;
@@ -123,6 +123,6 @@ try {
 } finally {
   newspapers = [];
 }
-// });
+});
 
-// job.start();
+job.start();
