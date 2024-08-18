@@ -15,7 +15,6 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
     CHROME_BINARY_PATH=/usr/bin/chromium-browser
 
-
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -23,3 +22,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --only=production
 
 COPY . .
+
+# Expose port 8000
+EXPOSE 8000
+
+#CMD instruction to start your application
+CMD ["npm", "start"]
