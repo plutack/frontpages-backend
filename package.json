@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" ",
     "start:cron": "node ./cron/job.js",
     "start:server": "node ./server.js",
-    "start": "concurrently 'npm run start:cron' 'npm run start:server'",
+    "start": "node ./server.js",
     "prepare": "husky install"
   },
   "keywords": [],
