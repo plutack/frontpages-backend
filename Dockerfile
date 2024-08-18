@@ -7,7 +7,8 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    git
 
 # Set environment variables
 ENV CHROME_BIN=/usr/bin/chromium-browser \
@@ -19,6 +20,6 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm install --production
+RUN npm ci --only=production
 
 COPY . .
