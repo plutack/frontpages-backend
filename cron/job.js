@@ -44,9 +44,7 @@ const saveOrUpdateEntry = async (newspapers) => {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
   try {
-    const existingEntry = await Entry.findOne({ date }).populate("newspapers");
-
-    console.log("existingEntry", existingEntry.toJSON(), typeof existingEntry);
+    const existingEntry = await Entry.findOne({ date }).populate('newspapers');
 
     if (!existingEntry) {
       const newspapersID = [];
@@ -63,27 +61,20 @@ const saveOrUpdateEntry = async (newspapers) => {
       console.log(`New entry for date: ${date} saved to database`);
       return;
     } else {
-      const extraNewspaperID = [];
       for (const newspaper of newspapers) {
-        console.log("existing newspaprers", existingEntry.newspapers);
-        if (
-          !existingEntry.newspapers.some(
-            (existingNewspaper) => existingNewspaper.name === newspaper.name,
-          )
-        ) {
-          await newspaper.save();
-          extraNewspaperID.push(newspaper._id);
+        const existingNewspaper = await Newspaper.findOne({ date, name: newspaper.name });
+        if (existingNewspaper) {
+          // Update existing newspaper
+          existingNewspaper.link = newspaper.link;
+          await existingNewspaper.save();
+        } else {
+          // Create new newspaper
+          const savedNewspaper = await newspaper.save();
+          existingEntry.newspapers.push(savedNewspaper._id);
         }
       }
-      if (extraNewspaperID.length) {
-        await existingEntry.updateOne(
-          {},
-          { $push: { newspapers: { $each: extraNewspaperID } } },
-        );
-        console.log(`Existing entry for date: ${date}  updated in database`);
-        return;
-      }
-      console.log(`No update made on existing entry for date: ${date}`);
+      await existingEntry.save();
+      console.log(`Existing entry for date: ${date} updated in database`);
     }
   } catch (error) {
     console.error("Error connecting to database or saving entry:", error);

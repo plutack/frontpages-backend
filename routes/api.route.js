@@ -14,23 +14,28 @@ apiRoute.get("/api/today", async (req, res) => {
     let date = new Date();
     let data = await Entry.findOne({
       date: moment(date).format("YYYY-MM-DD"),
-    });
-    console.log(data);
-    if (data) {
-      return res.json(data);
+    }).populate('newspapers');
+
+    if (!data) {
+      // If no data for today, check yesterday
+      date.setDate(date.getDate() - 1);
+      data = await Entry.findOne({
+        date: moment(date).format("YYYY-MM-DD"),
+      }).populate('newspapers');
     }
-    // send previous day data
-    date.setDate(date.getDate() - 1);
-    console.log(date);
-    data = await Entry.findOne({ date: moment(date).format("YYYY-MM-DD") });
-    if (data) {
-      return res.json(data);
+
+    if (data && data.newspapers && data.newspapers.length > 0) {
+      return res.json({
+        papers: data.newspapers.map((newspaper) => ({
+          paperName: newspaper.name,
+          paperLink: newspaper.link,
+        })),
+        timestamp: Date.now(),
+      });
     }
-    throw new Error("no data available");
+
+    return res.json({ success: false, message: "updates coming soon" });
   } catch (err) {
-    if (err.message === "no data available") {
-      return res.json({ success: false, message: "updates coming soon" });
-    }
     return res.status(400).json({ success: false, message: err.message });
   }
 });

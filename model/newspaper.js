@@ -10,13 +10,15 @@ const newspaperSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
   },
   link: {
     type: String,
     required: true,
   },
 });
+
+// Add a compound index for date and name
+newspaperSchema.index({ date: 1, name: 1 }, { unique: true });
 
 //set what is returned when queried
 newspaperSchema.set("toJSON", {
