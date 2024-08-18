@@ -10,6 +10,9 @@ RUN apk add --no-cache \
     ttf-freefont \
     git
 
+# Create a non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 # Set environment variables
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
@@ -17,14 +20,20 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
 
 WORKDIR /app
 
+# Change ownership of the working directory to the non-root user
+RUN chown -R appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
+
 COPY package.json package-lock.json ./
 
 RUN npm ci --only=production
 
 COPY . .
 
-# Expose port 8000
+# Expose port 5000
 EXPOSE 5000
 
-#CMD instruction to start your application
+# CMD instruction to start your application
 CMD ["npm", "start"]
