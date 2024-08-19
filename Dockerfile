@@ -1,31 +1,27 @@
 FROM satantime/puppeteer-node:20.9.0-bookworm
 
-# Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Create app directory
 WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-# Bundle app source
-COPY . .
-
-# Create a non-root user and switch to it
+# Create a non-root user earlier in the process
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser /app
+    && chown -R pptruser:pptruser /home/pptruser
 
-    
-# Install dependencies, including Puppeteer
+# Copy application files and set permissions
+COPY . .
+RUN chown -R pptruser:pptruser /app
+
+# Switch to non-root user
 USER pptruser
-RUN npm ci --omit=dev
-RUN npx puppeteer browsers install chrome
 
-# Expose the port your app runs on
+# Install dependencies and Puppeteer
+RUN npm ci --omit=dev \
+    && npx puppeteer browsers install chrome
+
 EXPOSE 5000
 
-# Start the application
 CMD ["npm", "start"]
