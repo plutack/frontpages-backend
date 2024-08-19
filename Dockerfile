@@ -20,6 +20,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 RUN npm ci --only=production
+RUN npx puppeteer browsers install chrome
 
 COPY . .
 
