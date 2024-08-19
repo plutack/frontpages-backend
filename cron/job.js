@@ -81,8 +81,6 @@ const saveOrUpdateEntry = async (newspapers) => {
     }
   } catch (error) {
     console.error("Error connecting to database or saving entry:", error);
-  } finally {
-    await dbConnection.disconnect();
   }
 };
 
