@@ -3,6 +3,7 @@ FROM node:20-buster-slim
 # Install Chrome dependencies and create non-root user in one layer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
+    chromium-sandbox \
     libnss3 \
     libfreetype6 \
     fonts-freefont-ttf \
@@ -25,6 +26,10 @@ WORKDIR /app
 COPY --chown=appuser:appgroup package*.json ./
 RUN npm ci --only=production
 COPY --chown=appuser:appgroup . .
+
+# Set up permissions for Chrome to run in a container
+RUN mkdir -p /home/appuser/.cache/chromium && \
+    chown -R appuser:appgroup /home/appuser
 
 # Switch to the non-root user
 USER appuser
