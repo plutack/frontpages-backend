@@ -7,13 +7,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Create a non-root user earlier in the process
-RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser
+# RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+#     && mkdir -p /home/pptruser/Downloads \
+#     && chown -R pptruser:pptruser /home/pptruser
 
 # Copy application files and set permissions
 COPY . .
-RUN chown -R pptruser:pptruser /app
+# RUN chown -R pptruser:pptruser /app
 
 # Switch to non-root user
 USER pptruser
