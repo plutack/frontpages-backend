@@ -1,7 +1,6 @@
 import { Router } from "express";
 import Entry from "../model/entry.js";
 import moment from "moment";
-import { join } from "node:path";
 
 const apiRoute = Router();
 
