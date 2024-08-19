@@ -1,41 +1,30 @@
-FROM node:20-buster-slim
+FROM satantime/puppeteer-node:20.9.0-bookworm
 
-# Install Chrome dependencies and create non-root user in one layer
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    chromium-sandbox \
-    libnss3 \
-    libfreetype6 \
-    fonts-freefont-ttf \
-    libfontconfig1 \
-    ca-certificates \
-    git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r appgroup && useradd -r -g appgroup appuser
+# Set NODE_ENV to production
+ENV NODE_ENV=production
 
-# Set environment variables
-ENV CHROME_BIN=/usr/bin/chromium \
-    CHROME_PATH=/usr/lib/chromium/ \
-    CHROME_BINARY_PATH=/usr/bin/chromium \
-    NODE_ENV=production
-
+# Create app directory
 WORKDIR /app
 
-# Copy package files, install dependencies, and copy app files in one layer
-COPY --chown=appuser:appgroup package*.json ./
-RUN npm ci --only=production
-COPY --chown=appuser:appgroup . .
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
-# Set up permissions for Chrome to run in a container
-RUN mkdir -p /home/appuser/.cache/chromium && \
-    chown -R appuser:appgroup /home/appuser
+# Install dependencies, including Puppeteer
+RUN npm ci --omit=dev
 
-# Switch to the non-root user
-USER appuser
+# Bundle app source
+COPY . .
 
-# Expose port 5000
+# Create a non-root user and switch to it
+RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser /app
+
+USER pptruser
+
+# Expose the port your app runs on
 EXPOSE 5000
 
-# CMD instruction to start your application
+# Start the application
 CMD ["npm", "start"]
