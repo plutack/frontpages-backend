@@ -10,12 +10,6 @@ WORKDIR /app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-
-# Install dependencies, including Puppeteer
-RUN npm ci --only=production
-RUN npx puppeteer browsers install chrome
-
-
 # Bundle app source
 COPY . .
 
@@ -24,7 +18,11 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser /app
 
+    
+# Install dependencies, including Puppeteer
 USER pptruser
+RUN npm ci --omit=dev
+RUN npx puppeteer browsers install chrome
 
 # Expose the port your app runs on
 EXPOSE 5000
