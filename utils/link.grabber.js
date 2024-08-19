@@ -22,7 +22,9 @@ export const getGuardianUrl = async () => {
 };
 
 export const getTribuneUrl = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.goto(newspaperData.tribune, {
@@ -41,7 +43,9 @@ export const getTribuneUrl = async () => {
 };
 
 export const getDTrustUrl = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.goto(newspaperData.daily_trust, {
@@ -65,7 +69,9 @@ export const getDTrustUrl = async () => {
 };
 
 export const getVanguardUrl = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.goto(newspaperData.vanguard, {
@@ -86,7 +92,9 @@ export const getVanguardUrl = async () => {
 };
 
 export const getSportUrl = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.goto(newspaperData.complete_sports, {
