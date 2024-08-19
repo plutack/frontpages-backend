@@ -19,13 +19,8 @@ RUN npm ci --omit=dev \
 COPY . .
 RUN chown -R pptruser:pptruser /app
 
-# Set up Chrome sandbox
-RUN cd /usr/local/lib/node_modules/puppeteer/.local-chromium/linux-*/chrome-linux/ \
-    && chown root:root chrome_sandbox \
-    && chmod 4755 chrome_sandbox \
-    && cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
-
-ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+# Enable unprivileged user namespaces
+RUN sysctl -w kernel.unprivileged_userns_clone=1
 
 # Switch to non-root user
 USER pptruser
