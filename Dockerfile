@@ -1,23 +1,25 @@
-FROM node:20-alpine
+FROM node:20-buster
 
 # Install Chrome dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     chromium \
     nss \
-    freetype \
-    harfbuzz \
+    freetype2 \
+    fonts-freefont-ttf \
+    libfontconfig \
     ca-certificates \
-    ttf-freefont \
     git \
-    dumb-init
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user and group
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 # Set environment variables
-ENV CHROME_BIN=/usr/bin/chromium-browser \
+ENV CHROME_BIN=/usr/bin/chromium \
     CHROME_PATH=/usr/lib/chromium/ \
-    CHROME_BINARY_PATH=/usr/bin/chromium-browser
+    CHROME_BINARY_PATH=/usr/bin/chromium
 
 WORKDIR /app
 
@@ -36,5 +38,5 @@ COPY . .
 # Expose port 5000
 EXPOSE 5000
 
-# CMD instruction to start your application using dumb-init
-CMD ["dumb-init", "npm", "start"]
+# CMD instruction to start your application
+CMD ["npm", "start"]
