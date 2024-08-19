@@ -1,12 +1,13 @@
+
 FROM node:20-buster
 
 # Install Chrome dependencies
 RUN apt-get update && apt-get install -y \
     chromium \
-    nss \
-    freetype2 \
+    libnss3 \
+    libfreetype6 \
     fonts-freefont-ttf \
-    libfontconfig \
+    libfontconfig1 \
     ca-certificates \
     git \
     --no-install-recommends && \
