@@ -5,10 +5,6 @@ import { join } from "node:path";
 
 const apiRoute = Router();
 
-apiRoute.get("/", (req, res) => {
-  res.send(join(import.meta.dirname, "..", "public", "index.html"));
-});
-
 apiRoute.get("/api/today", async (req, res) => {
   try {
     let date = new Date();
