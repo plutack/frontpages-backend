@@ -16,7 +16,7 @@ COPY . .
 # RUN chown -R pptruser:pptruser /app
 
 # Switch to non-root user
-USER pptruser
+# USER pptruser
 
 # Install dependencies and Puppeteer
 RUN npm ci --omit=dev \
