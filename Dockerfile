@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    git
+    git \
+    dumb-init
 
 # Create a non-root user and group
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -35,5 +36,5 @@ COPY . .
 # Expose port 5000
 EXPOSE 5000
 
-# CMD instruction to start your application
-CMD ["npm", "start"]
+# CMD instruction to start your application using dumb-init
+CMD ["dumb-init", "npm", "start"]
