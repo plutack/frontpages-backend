@@ -10,8 +10,11 @@ WORKDIR /app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
+
 # Install dependencies, including Puppeteer
-RUN npm ci --omit=dev
+RUN npm ci --only=production
+RUN npx puppeteer browsers install chrome
+
 
 # Bundle app source
 COPY . .
