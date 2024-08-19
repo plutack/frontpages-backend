@@ -4,23 +4,31 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
+# Create a non-root user
+RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser
+
 COPY package*.json ./
-
-# Create a non-root user earlier in the process
-# RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-#     && mkdir -p /home/pptruser/Downloads \
-#     && chown -R pptruser:pptruser /home/pptruser
-
-# Copy application files and set permissions
-COPY . .
-# RUN chown -R pptruser:pptruser /app
-
-# Switch to non-root user
-# USER pptruser
 
 # Install dependencies and Puppeteer
 RUN npm ci --omit=dev \
     && npx puppeteer browsers install chrome
+
+# Copy application files and set permissions
+COPY . .
+RUN chown -R pptruser:pptruser /app
+
+# Set up Chrome sandbox
+RUN cd /usr/local/lib/node_modules/puppeteer/.local-chromium/linux-*/chrome-linux/ \
+    && chown root:root chrome_sandbox \
+    && chmod 4755 chrome_sandbox \
+    && cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
+
+ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+
+# Switch to non-root user
+USER pptruser
 
 EXPOSE 5000
 
