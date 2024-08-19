@@ -20,7 +20,7 @@ COPY . .
 # RUN chown -R pptruser:pptruser /app
 
 # Enable unprivileged user namespaces
-RUN sudo sysctl -w kernel.unprivileged_userns_clone=1
+# RUN sudo sysctl -w kernel.unprivileged_userns_clone=1
 
 # Switch to non-root user
 # USER pptruser
