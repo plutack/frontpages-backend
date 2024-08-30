@@ -4,27 +4,30 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
-# Create a non-root user
-# RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-#     && mkdir -p /home/pptruser/Downloads \
-#     && chown -R pptruser:pptruser /home/pptruser
-
-COPY package*.json ./
+# Install cron
+RUN apt-get update && apt-get install -y cron
 
 # Install dependencies and Puppeteer
-RUN npm ci --omit=dev \
-    && npx puppeteer browsers install chrome
+COPY package*.json ./
+RUN npm ci --omit=dev && npx puppeteer browsers install chrome
 
-# Copy application files and set permissions
+# Copy application files
 COPY . .
-# RUN chown -R pptruser:pptruser /app
 
-# Enable unprivileged user namespaces
-# RUN sudo sysctl -w kernel.unprivileged_userns_clone=1
+# Create a cron job to kill Chrome every 5 minutes
+RUN echo "*/5 * * * * pkill chrome" > /etc/cron.d/kill_chrome
 
-# Switch to non-root user
-# USER pptruser
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/kill_chrome
 
+# Apply the cron job
+RUN crontab /etc/cron.d/kill_chrome
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+
+# Expose the application's port
 EXPOSE 5000
 
-CMD ["npm", "start"]
+# Start the cron service and the application
+CMD cron && npm start
