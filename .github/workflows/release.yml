@@ -3,31 +3,36 @@ name: Create Release with Changelog
 on:
   push:
     tags:
-      - 'v*'  # Triggers the workflow on tag pushes that start with 'v'
+      - 'v*'  # Trigger on tag pushes that start with 'v'
+
+permissions:
+  contents: write  # Ensure the workflow can write to the repository
 
 jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3 for Node.js 16 support
 
       - name: Extract Release Notes from CHANGELOG
         id: extract_notes
         run: |
-          # Extract the notes for the tag pushed from CHANGELOG.md
           tag_version=${GITHUB_REF#refs/tags/}
-          notes=$(sed -n '/^## \['${tag_version}'\]/,/^## /p' CHANGELOG.md | sed '$d')
+          notes=$(sed -n '/^## \['${tag_version}'\]/,/^## \[/p' CHANGELOG.md | sed '$d')
+          if [ -z "$notes" ]; then
+            notes=$(sed -n '/^## \['${tag_version}'\]/,$p' CHANGELOG.md)
+          fi
           echo "::set-output name=notes::$notes"
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1  # Alternative maintained action for GitHub releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}  # The tag that was just pushed
-          release_name: Release ${{ github.ref }}  # Name the release after the tag
-          body: ${{ steps.extract_notes.outputs.notes }}  # Use the extracted notes
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.extract_notes.outputs.notes }}
           draft: false
           prerelease: false
