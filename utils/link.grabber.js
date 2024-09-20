@@ -5,28 +5,36 @@ import newspaperData from "./newspaper.links.js";
 import "dotenv/config";
 
 puppeteer.use(stealthPlugin());
-
+let browser;
+let page;
 export const getGuardianUrl = async () => {
+  browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
-    const response = await fetch(
-      "https://epaperbackend.guardian.ng/api/papers/today-paper",
-    );
-    if (response.ok) {
-      const { result } = await response.json();
-      return result;
-    }
-    console.log(" bad fetch for Guardian");
+    page = await browser.newPage();
+    await page.goto(newspaperData.guardian, {
+      waitUntil: "domcontentloaded",
+      timeout: 0,
+    });
+    const renderedHtml = await page.content();
+    const $ = load(renderedHtml);
+    const imgLink = $('img[title="PDF Preview"]').attr("src");
+    return imgLink;
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
+  } finally {
+    if (page) await page.close();
+    await browser.close();
   }
 };
 
 export const getTribuneUrl = async () => {
-  const browser = await puppeteer.launch({
+  browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto(newspaperData.tribune, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -38,16 +46,17 @@ export const getTribuneUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
+    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getDTrustUrl = async () => {
-  const browser = await puppeteer.launch({
+  browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto(newspaperData.daily_trust, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -64,16 +73,17 @@ export const getDTrustUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
+    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getVanguardUrl = async () => {
-  const browser = await puppeteer.launch({
+  browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto(newspaperData.vanguard, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -87,16 +97,17 @@ export const getVanguardUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
+    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getSportUrl = async () => {
-  const browser = await puppeteer.launch({
+  browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto(newspaperData.complete_sports, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -109,6 +120,7 @@ export const getSportUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
+    if (page) await page.close();
     await browser.close();
   }
 };
