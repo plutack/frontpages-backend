@@ -9,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload an image
+// Upload an image to cloudinary
 export const uploadImg = async (newspaperName, imgLink) => {
   try {
     const { secure_url } = await cloudinary.uploader.upload(imgLink, {
