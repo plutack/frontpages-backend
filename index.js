@@ -1,11 +1,8 @@
-import express from "express";
-import apiRoute from "./routes/api.route.js";
-import cors from "cors";
+import newspaper from "./routes/newspaper.js";
+import {Hono} from "hono"
+const app = new Hono();
 
-const app = express();
 
-app.use([express.static("public"), cors()]);
-
-app.use("/", apiRoute);
+app.use("/newspapers", newspaper);
 
 export default app;
