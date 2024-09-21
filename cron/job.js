@@ -13,7 +13,7 @@ import {
   compareHash,
   urlToBase64,
 } from "../utils/hash.functions.js";
-import { getGuardianUrl, getTribuneUrl } from "../utils/link.grabber.js";
+import { getGuardianUrl, getTribuneUrl, getVanguardUrl, getDTrustUrl,getSportUrl } from "../utils/link.grabber.js";
 import newspaperData from "../utils/newspaper.links.js";
 
 // const time = process.env.CRON_TIME;
