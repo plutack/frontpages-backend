@@ -1,8 +1,8 @@
 const googleSearch = async (query) => {
   try {
     const baseapi = "https://www.googleapis.com/customsearch/v1";
-    const key = process.env.GOOGLE_API_KEY;
-    const cx = process.env.GOOGLE_CX;
+    const key = process.env.GOOGLE_SEARCH_API_KEY
+    const cx = process.env.SEARCH_ENGINE_ID;
     const gl = "ng";
 
     if (!key || !cx) {
