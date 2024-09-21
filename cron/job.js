@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // import { CronJob } from "cron";
 import "dotenv/config";
 import moment from "moment";
