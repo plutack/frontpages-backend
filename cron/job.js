@@ -161,7 +161,7 @@ const job = async () => {
       console.log(newspaperName);
       switch (newspaperName) {
         case "guardian":
-          // await saveToArray(newspaperName, getGuardianUrl);
+          await saveToArray(newspaperName, getGuardianUrl);
           break;
         case "tribune":
           await saveToArray(newspaperName, getTribuneUrl);
@@ -170,10 +170,10 @@ const job = async () => {
           // await saveToArray(newspaperName, getDTrustUrl);
           break;
         case "vanguard":
-          // await saveToArray(newspaperName, getVanguardUrl);
+          await saveToArray(newspaperName, getVanguardUrl);
           break;
         case "complete_sports":
-          // await saveToArray(newspaperName, getSportUrl);
+          await saveToArray(newspaperName, getSportUrl);
           break;
         default:
           break;
