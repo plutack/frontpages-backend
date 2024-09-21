@@ -154,41 +154,42 @@ const saveOrUpdateEntry = async (newspapers) => {
   }
 };
 
-const job = async () => {
-  console.log("cron job started");
-  try {
-    console.log("started fetching data", { time: new Date().toISOString() });
-    for (const newspaperName of newspaperNames) {
-      console.log(newspaperName);
-      switch (newspaperName) {
-        case "guardian":
-          await saveToArray(newspaperName, getGuardianUrl);
-          break;
-        case "tribune":
-          await saveToArray(newspaperName, getTribuneUrl);
-          break;
-        case "daily_trust":
-          // await saveToArray(newspaperName, getDTrustUrl);
-          break;
-        case "vanguard":
-          await saveToArray(newspaperName, getVanguardUrl);
-          break;
-        case "complete_sports":
-          await saveToArray(newspaperName, getSportUrl);
-          break;
-        default:
-          break;
+const job = new CronJob("0  * * *", async () => {
+  async () => {
+    console.log("cron job started");
+    try {
+      console.log("started fetching data", { time: new Date().toISOString() });
+      for (const newspaperName of newspaperNames) {
+        console.log(newspaperName);
+        switch (newspaperName) {
+          case "guardian":
+            await saveToArray(newspaperName, getGuardianUrl);
+            break;
+          case "tribune":
+            await saveToArray(newspaperName, getTribuneUrl);
+            break;
+          case "daily_trust":
+            // await saveToArray(newspaperName, getDTrustUrl);
+            break;
+          case "vanguard":
+            await saveToArray(newspaperName, getVanguardUrl);
+            break;
+          case "complete_sports":
+            await saveToArray(newspaperName, getSportUrl);
+            break;
+          default:
+            break;
+        }
       }
+      await saveOrUpdateEntry(newspapers);
+      console.log("debug completed ")
+    } catch (err) {
+      console.error(`${err.name}:${err.message}`);
+    } finally {
+      newspapers = [];
     }
-    await saveOrUpdateEntry(newspapers);
-    console.log("debug completed ")
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
-  } finally {
-    newspapers = [];
-  }
-};
+  };
+});
 
-export default job;
 
 job();

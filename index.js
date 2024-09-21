@@ -1,9 +1,12 @@
 import newspaper from "./routes/newspaper.js";
 import {Hono} from "hono"
+import {cors} from "@hono/cors"
 import {serve} from "@hono/node-server"
 import mongoose from "mongoose"
 
 const app = new Hono();
+
+app.use(cors());    
 
 app.route("/newspapers", newspaper);
 
@@ -22,7 +25,7 @@ const connectToDatabase =  async () => {
     }
   };
 
-  
+
 await connectToDatabase()
 console.log(`server started at ${port}`)
 serve({
