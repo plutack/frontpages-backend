@@ -154,7 +154,7 @@ const saveOrUpdateEntry = async (newspapers) => {
   }
 };
 
-const job = new CronJob("43 15 * * *", async () => {
+const job = new CronJob("48 15 * * *", async () => {
   async () => {
     console.log("cron job started");
     try {
