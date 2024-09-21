@@ -1,42 +1,84 @@
 import { Hono } from "hono";
 import Entry from "../model/entry.js";
+import Newspaper from "../model/newspaper.js";
+import SearchResult from "../model/search-result.js";
 import moment from "moment";
 
-const app = new Hono()
+const app = new Hono();
 
-app.get("/", async (ctx) => {
+app.get("/", async (c) => {
   try {
+    console.log()
+    let date = c.req.query("date");
+    if (!date) {
+      date = moment().format("YYYY-MM-DD");
+    } else {
+      const isValid = moment(date, "YYYY-MM-DD", true).isValid();
+      if (!isValid) {
+        return c.json({ success: false, message: "Invalid date format" }, 400);
+      }
+    }
 
-    let {date} = ctx.req.query
-    if (date) {
-      const isValid = moment(date, "YYYY-MM-DD", true).isValid()
-      if (!isValid) return ctx.redirect("/")
-    }
-    date = new Date();
-    let data
-    let rewindDays = 3
-    while (!data || rewindDays > 0) {
-      data = await Entry.findOne({
-        date: moment(date).format("YYYY-MM-DD"),
-      }).populate('newspapers');
-      // If no data, check previous day
-      date.setDate(date.getDate() - 1);
-      rewindDays--;
-    }
-    if (data && data.newspapers && data.newspapers.length > 0) {
-      return ctx.json({
+    const data = await Entry.findOne({
+      date: date,
+    }).populate('newspapers');
+
+    if (data && data.newspapers) {
+      return c.json({
         success: true,
         result: data.newspapers.map((newspaper) => ({
+          id: newspaper.id,
           name: newspaper.name,
           link: newspaper.link,
         })),
       });
     }
 
-    return ctx.json({ success: true, result: []});
+    return c.json({ success: true, result: [] });
   } catch (err) {
-    return ctx.status(400).json({ success: false, message: err.message });
+    return c.json({ success: false, message: err.message }, 500);
+  }
+});
+
+
+app.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const {date, name} = await Newspaper.findOne({_id: id});
+    const data = await SearchResult.find(
+      {
+        newspaperId: id,
+      }
+    ).populate();
+    console.log(data)
+    if (data && data.length > 0) {
+      return c.json({
+        success: true,
+        data: {
+          name,
+          date,
+          searchResult: data.map((item)=>{
+            return {
+              headline: item.headline,
+              result: item.result.map((result)=>{
+                return {
+                  title: result.title,
+                  link: result.link,
+                  snippet: result.snippet,
+                  tags: result.tags,  
+                }
+              })
+            }
+          })
+        }
+      });
+    }
+
+    // return c.json({ success: false, message: "No results found" });
+  } catch (err) {
+    return c.json({ success: false, message: err.message }, 500);
   }
 });
 
 export default app;
+
