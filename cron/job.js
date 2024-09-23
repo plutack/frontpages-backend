@@ -20,13 +20,14 @@ import newspaperData from "../utils/newspaper.links.js";
 // const time = process.env.CRON_TIME;
 const uri = process.env.MONGODB_URL;
 
-const date = moment().format("YYYY-MM-DD");
+
 const newspaperNames = Object.keys(newspaperData);
 let newspapers = [];
 let headlineSearchResults = {};
 
 // function to push  a newspaper docu // Only required if success is truement into a global array
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
+  console.log(`saving ${newspaperName}`);
   const imgUrl = await urlGrabberFunction();
   if (!imgUrl) {
     console.log(`No link for ${newspaperName}`);
@@ -64,15 +65,13 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
 
       const searchResult = new SearchResult(searchResultData);
       searchResultsArray.push(searchResult);
-      // await searchResult.save();
-      // console.log(newspapers);
     }
     headlineSearchResults[newspaperName] = searchResultsArray;
   }
 };
 
 // function to save or a full data entry to the database
-const saveOrUpdateEntry = async (newspapers) => {
+const saveOrUpdateEntry = async (newspapers, date) => {
   console.log("connecting to db");
   await mongoose.connect(uri, {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
@@ -99,7 +98,6 @@ const saveOrUpdateEntry = async (newspapers) => {
       const allNewspapers = Object.keys(headlineSearchResults);
       for (const newspaperName of allNewspapers) {
         for (const searchResult of headlineSearchResults[newspaperName]) {
-          console.log("searchResult", searchResult);
           await searchResult.save();
         }
         console.log(`headlines for ${newspaperName} saved`);
@@ -123,7 +121,6 @@ const saveOrUpdateEntry = async (newspapers) => {
           existingNewspaper.data = newspaper.data;
           await existingNewspaper.save();
           SearchResult.deleteMany({ newspaperId: existingNewspaper._id });
-          console.log("hedline", headlineSearchResults)
           for (const headline of headlineSearchResults[newspaper.name]) {
             headline.newspaperId = existingNewspaper._id;
             await headline.save();
@@ -139,9 +136,7 @@ const saveOrUpdateEntry = async (newspapers) => {
       for (const newspaper of newspapers) {
         const savedNewspaper = await newspaper.save();
         existingEntry.newspapers.push(savedNewspaper._id);
-        console.log(`Hello`, newspaper);
         SearchResult.insertMany(headlineSearchResults[newspaper.name]);
-        
       }
       await existingEntry.save();
       console.log(`Existing entry for date: ${date} updated in database`);
@@ -150,17 +145,19 @@ const saveOrUpdateEntry = async (newspapers) => {
     console.error("Error connecting to database or saving entry:", error);
   } finally {
     newspapers = [];
-    mongoose.connection.close();
+    headlineSearchResults = {}
+    await mongoose.disconnect()
+    console.log("disconnected from database")
   }
 };
 
-const job = new CronJob("0 9 * * *", 
+const job = new CronJob("36 12 * * *", 
   async () => {
+    const date = moment().format("YYYY-MM-DD");
     console.log("cron job started");
     try {
       console.log("started fetching data", { time: new Date().toISOString() });
       for (const newspaperName of newspaperNames) {
-        console.log(newspaperName);
         switch (newspaperName) {
           case "guardian":
             await saveToArray(newspaperName, getGuardianUrl);
@@ -181,13 +178,11 @@ const job = new CronJob("0 9 * * *",
             break;
         }
       }
-      await saveOrUpdateEntry(newspapers);
-      console.log("debug completed ")
+      await saveOrUpdateEntry(newspapers, date);
+      console.log("save completed ")
     } catch (err) {
       console.error(`${err.name}:${err.message}`);
-    } finally {
-      newspapers = [];
-    }
+    } 
 });
 
 
