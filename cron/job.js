@@ -28,6 +28,7 @@ let headlineSearchResults = {};
 // function to push  a newspaper docu // Only required if success is truement into a global array
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
   console.log(`saving ${newspaperName}`);
+  const date = moment().format("YYYY-MM-DD");
   const imgUrl = await urlGrabberFunction();
   if (!imgUrl) {
     console.log(`No link for ${newspaperName}`);
@@ -43,6 +44,7 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
   const response = await analyzeImage(dataUrlString);
   if (response.success && response.result) {
     const newspaperInfo = {
+      date,
       name: newspaperName,
       link: uploadedLink,
       hash,
@@ -151,12 +153,12 @@ const saveOrUpdateEntry = async (newspapers, date) => {
   }
 };
 
-const job = new CronJob("36 12 * * *", 
+const job = new CronJob("50 9 * * *", 
   async () => {
     const date = moment().format("YYYY-MM-DD");
     console.log("cron job started");
     try {
-      console.log("started fetching data", { time: new Date().toISOString() });
+      console.log("started fetching data", {date });
       for (const newspaperName of newspaperNames) {
         switch (newspaperName) {
           case "guardian":

@@ -53,7 +53,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" , generationC
 }
 }, );
 export async function analyzeImage(dataUrlString){
-  const prompt = 'critically find and analyze all the news headlines from the provided image. If the image does not contain a page of news headlines, if image is invalid or has no parsable headline set error key  to  "invalid image".\nOtherwise, for each headline, generate a JSON object with these fields:\n"headline": The extracted headline text.\n"search_query": A concise and relevant Google search query based on the headline.\n"tag": The most appropriate news category (e.g., "politics,", "economy", "business,", "finance",  "sports," "technology," "entertainment," "world", "education", "crime", "health").'
+  const prompt = 'critically find and analyze all the news headlines from the provided image. If the image does not contain a page of news headlines, if image is invalid or has no parsable headline set error key  to  "invalid image".\nOtherwise, for each headline, generate a JSON object with these fields:\n"headline": The extracted headline text.\n"search_query": A short detailed Google search query taht will produce recent search resuult based on the headline.\n"tag": The most appropriate news category (e.g., "politics,", "economy", "business,", "finance",  "sports," "technology," "entertainment," "world", "education", "crime", "health").'
 
   const result = await model.generateContent([prompt,
         {

@@ -5,14 +5,12 @@ import newspaperData from "./newspaper.links.js";
 import "dotenv/config";
 
 puppeteer.use(stealthPlugin());
-let browser;
-let page;
 export const getGuardianUrl = async () => {
-  browser = await puppeteer.launch({
+  let browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    page = await browser.newPage();
+   let page = await browser.newPage();
     await page.goto(newspaperData.guardian, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -24,17 +22,16 @@ export const getGuardianUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
-    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getTribuneUrl = async () => {
-  browser = await puppeteer.launch({
+  let browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(newspaperData.tribune, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -46,17 +43,16 @@ export const getTribuneUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
-    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getDTrustUrl = async () => {
-  browser = await puppeteer.launch({
+  let browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(newspaperData.daily_trust, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -73,17 +69,16 @@ export const getDTrustUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
-    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getVanguardUrl = async () => {
-  browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  let browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox" ],
   });
   try {
-    page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(newspaperData.vanguard, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -97,17 +92,16 @@ export const getVanguardUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
-    if (page) await page.close();
     await browser.close();
   }
 };
 
 export const getSportUrl = async () => {
-  browser = await puppeteer.launch({
+  let browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-    page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(newspaperData.complete_sports, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -120,7 +114,6 @@ export const getSportUrl = async () => {
   } catch (err) {
     console.error(`${err.name}:${err.message}`);
   } finally {
-    if (page) await page.close();
     await browser.close();
   }
 };
