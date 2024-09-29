@@ -146,8 +146,6 @@ const saveOrUpdateEntry = async (newspapers, date) => {
   } catch (error) {
     console.error("Error connecting to database or saving entry:", error);
   } finally {
-    newspapers = [];
-    headlineSearchResults = {}
     await mongoose.disconnect()
     console.log("disconnected from database")
   }
@@ -184,7 +182,11 @@ const job = new CronJob("50 9 * * *",
       console.log("save completed ")
     } catch (err) {
       console.error(`${err.name}:${err.message}`);
-    } 
+    } finally {
+      newspapers = [];
+      headlineSearchResults = {}
+      console.log("Temp data object cleared")
+    }
 });
 
 
