@@ -1,6 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 import moment from "moment";
 import "dotenv/config";
+import Logger from "./logger.js";
+
+
+const log = Logger.child({module: "Cloundinary functions"})
 
 // Configuration
 cloudinary.config({
@@ -9,7 +13,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload an image to cloudinary
 export const uploadImg = async (newspaperName, imgLink) => {
   try {
     const { secure_url } = await cloudinary.uploader.upload(imgLink, {
@@ -17,7 +20,7 @@ export const uploadImg = async (newspaperName, imgLink) => {
     });
     return secure_url;
   } catch (error) {
-    console.error(error);
+    log.error("image upload failed", {error})
     return "";
   }
 };

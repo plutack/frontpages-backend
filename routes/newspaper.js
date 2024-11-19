@@ -8,7 +8,7 @@ const app = new Hono();
 
 app.get("/", async (c) => {
   try {
-    console.log()
+    console.log();
     let date = c.req.query("date");
     if (!date) {
       date = moment().format("YYYY-MM-DD");
@@ -21,7 +21,7 @@ app.get("/", async (c) => {
 
     const data = await Entry.findOne({
       date: date,
-    }).populate('newspapers');
+    }).populate("newspapers");
 
     if (data && data.newspapers) {
       return c.json({
@@ -40,37 +40,35 @@ app.get("/", async (c) => {
   }
 });
 
-
 app.get("/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    const {date, name} = await Newspaper.findOne({_id: id});
+    const { date, name } = await Newspaper.findOne({ _id: id });
     const data = await SearchResult.find(
       {
         newspaperId: id,
-      }
+      },
     ).populate();
-    console.log(data)
     if (data && data.length > 0) {
       return c.json({
         success: true,
         data: {
           name,
           date,
-          searchResult: data.map((item)=>{
+          searchResult: data.map((item) => {
             return {
               headline: item.headline,
-              result: item.result.map((result)=>{
+              result: item.result.map((result) => {
                 return {
                   title: result.title,
                   link: result.link,
                   snippet: result.snippet,
-                  tags: result.tags,  
-                }
-              })
-            }
-          })
-        }
+                  tags: result.tags,
+                };
+              }),
+            };
+          }),
+        },
       });
     }
 
@@ -81,4 +79,3 @@ app.get("/:id", async (c) => {
 });
 
 export default app;
-

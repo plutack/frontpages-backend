@@ -14,12 +14,21 @@ import {
   compareHash,
   urlToBase64,
 } from "../utils/hash.functions.js";
-import { getGuardianUrl, getTribuneUrl, getVanguardUrl, getDTrustUrl,getSportUrl } from "../utils/link.grabber.js";
+import {
+  getDTrustUrl,
+  getGuardianUrl,
+  getSportUrl,
+  getTribuneUrl,
+  getVanguardUrl,
+} from "../utils/link.grabber.js";
 import newspaperData from "../utils/newspaper.links.js";
+import Logger from "./logger.js";
+
+
+const log = Logger.child({module: "Cron Job"})
 
 // const time = process.env.CRON_TIME;
 const uri = process.env.MONGODB_URL;
-
 
 const newspaperNames = Object.keys(newspaperData);
 let newspapers = [];
@@ -27,16 +36,16 @@ let headlineSearchResults = {};
 
 // function to push  a newspaper docu // Only required if success is truement into a global array
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
-  console.log(`saving ${newspaperName}`);
+  log.info("saving newspaper", {newspaper: newspaperName})
   const date = moment().format("YYYY-MM-DD");
   const imgUrl = await urlGrabberFunction();
   if (!imgUrl) {
-    console.log(`No link for ${newspaperName}`);
+    log.warn("No link for newspaper", {newspaper: newspaperName});
     return;
   }
   const uploadedLink = await uploadImg(newspaperName, imgUrl);
   if (!uploadedLink) {
-    console.log(`No link for ${newspaperName}`);
+    log.warn("No link for newspaper", {newspaper: newspaperName});
     return;
   }
   const dataUrlString = await urlToBase64(uploadedLink);
@@ -74,11 +83,11 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
 
 // function to save or a full data entry to the database
 const saveOrUpdateEntry = async (newspapers, date) => {
-  console.log("connecting to db");
+  log.info("connecting to database");
   await mongoose.connect(uri, {
     serverApi: { version: "1", strict: true, deprecationErrors: true },
   });
-  console.log("connected to db");
+  log.info("connected to database");
   try {
     //check if entry already exists already
     const existingNewspaperArray = [];
@@ -89,20 +98,20 @@ const saveOrUpdateEntry = async (newspapers, date) => {
       for (const newspaper of newspapers) {
         const { id } = await newspaper.save();
         newspapersID.push({ id, name: newspaper.name });
-        console.log(`newspaper: ${newspaper.name} saved`);
+        log.info("newspaper saved", {name: newspaper.name});
       }
       const entry = new Entry({
         date,
         newspapers: newspapersID.map((newspaper) => newspaper.id),
       });
       await entry.save();
-      console.log(`New entry for date: ${date} saved to database`);
+      log.info("New entry saved to database", { date });
       const allNewspapers = Object.keys(headlineSearchResults);
       for (const newspaperName of allNewspapers) {
         for (const searchResult of headlineSearchResults[newspaperName]) {
           await searchResult.save();
         }
-        console.log(`headlines for ${newspaperName} saved`);
+        log.info("headlines saved", {name: newspaperName});
       }
       return;
     }
@@ -127,9 +136,8 @@ const saveOrUpdateEntry = async (newspapers, date) => {
             headline.newspaperId = existingNewspaper._id;
             await headline.save();
           }
-        }
-      }
-      // Create new newspaper document if it does not exist
+        }}
+      log.info("New entry saved to database", { date });
       for (const newspaperName of existingNewspaperArray) {
         newspapers = newspapers.filter(
           (newspaper) => newspaper.name !== newspaperName,
@@ -141,53 +149,51 @@ const saveOrUpdateEntry = async (newspapers, date) => {
         SearchResult.insertMany(headlineSearchResults[newspaper.name]);
       }
       await existingEntry.save();
-      console.log(`Existing entry for date: ${date} updated in database`);
+      log.info("existing entry updated in database", {date});
     }
   } catch (error) {
-    console.error("Error connecting to database or saving entry:", error);
+    log.fatal("error connecting to database or saving entry", {error});
   } finally {
-    await mongoose.disconnect()
-    console.log("disconnected from database")
+    await mongoose.disconnect();
+    log.info("disconnected from database");
   }
 };
 
-const job = new CronJob("50 9 * * *", 
-  async () => {
-    const date = moment().format("YYYY-MM-DD");
-    console.log("cron job started");
-    try {
-      console.log("started fetching data", {date });
-      for (const newspaperName of newspaperNames) {
-        switch (newspaperName) {
-          case "guardian":
-            await saveToArray(newspaperName, getGuardianUrl);
-            break;
-          case "tribune":
-            await saveToArray(newspaperName, getTribuneUrl);
-            break;
-          case "daily_trust":
-            // await saveToArray(newspaperName, getDTrustUrl);
-            break;
-          case "vanguard":
-            await saveToArray(newspaperName, getVanguardUrl);
-            break;
-          case "complete_sports":
-            await saveToArray(newspaperName, getSportUrl);
-            break;
-          default:
-            break;
-        }
+const job = new CronJob("50 9 * * *", async () => {
+  const date = moment().format("YYYY-MM-DD");
+  log.info("cron job started");
+  try {
+   log.info("started cron job", { date });
+    for (const newspaperName of newspaperNames) {
+      switch (newspaperName) {
+        case "guardian":
+          await saveToArray(newspaperName, getGuardianUrl);
+          break;
+        case "tribune":
+          await saveToArray(newspaperName, getTribuneUrl);
+          break;
+        case "daily_trust":
+          // await saveToArray(newspaperName, getDTrustUrl);
+          break;
+        case "vanguard":
+          await saveToArray(newspaperName, getVanguardUrl);
+          break;
+        case "complete_sports":
+          await saveToArray(newspaperName, getSportUrl);
+          break;
+        default:
+          break;
       }
-      await saveOrUpdateEntry(newspapers, date);
-      console.log("save completed ")
-    } catch (err) {
-      console.error(`${err.name}:${err.message}`);
-    } finally {
-      newspapers = [];
-      headlineSearchResults = {}
-      console.log("Temp data object cleared")
     }
+    await saveOrUpdateEntry(newspapers, date);
+    log.info("completed cron job successfully ");
+  } catch (error) {
+    log.fatal("cron job failed", {error})
+  } finally {
+    newspapers = [];
+    headlineSearchResults = {};
+    log.info("temp data object cleared");
+  }
 });
-
 
 job.start();

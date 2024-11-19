@@ -17,10 +17,9 @@ const newspaperSchema = new mongoose.Schema({
   },
   hash: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
-
 
 // Add a compound index for date and name
 newspaperSchema.index({ date: 1, name: 1 }, { unique: true });

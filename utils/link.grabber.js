@@ -3,6 +3,10 @@ import puppeteer from "puppeteer-extra";
 import stealthPlugin from "puppeteer-extra-plugin-stealth";
 import newspaperData from "./newspaper.links.js";
 import "dotenv/config";
+import Logger from "./logger.js";
+
+
+const log = Logger.child({module: "Link Grabber"})
 
 puppeteer.use(stealthPlugin());
 export const getGuardianUrl = async () => {
@@ -10,7 +14,7 @@ export const getGuardianUrl = async () => {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
-   let page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(newspaperData.guardian, {
       waitUntil: "domcontentloaded",
       timeout: 0,
@@ -19,8 +23,8 @@ export const getGuardianUrl = async () => {
     const $ = load(renderedHtml);
     const imgLink = $('img[title="PDF Preview"]').attr("src");
     return imgLink;
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
+  } catch (error) {
+    log.error("guardian image link not scrapped successfully", {error})
   } finally {
     await browser.close();
   }
@@ -40,8 +44,8 @@ export const getTribuneUrl = async () => {
     const $ = load(renderedHtml);
     const imgLink = $('img[title="Frontpage Today"]').attr("src");
     return imgLink;
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
+  } catch (error) {
+    log.error("tribune image link not scrapped successfully", {error})
   } finally {
     await browser.close();
   }
@@ -66,8 +70,8 @@ export const getDTrustUrl = async () => {
     let imgLink = img.attr("data-lazyload");
     imgLink = `https:${imgLink.replace("-scaled", "")}`;
     return imgLink;
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
+  } catch (error) {
+    log.error("daily trust image link not scrapped successfully", {error})
   } finally {
     await browser.close();
   }
@@ -75,7 +79,7 @@ export const getDTrustUrl = async () => {
 
 export const getVanguardUrl = async () => {
   let browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox" ],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
     let page = await browser.newPage();
@@ -89,8 +93,8 @@ export const getVanguardUrl = async () => {
     const imgColumn = allColumns.eq(2);
     const imgLink = imgColumn.find("img").attr("src");
     return imgLink;
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
+  } catch (error) {
+    log.error("vanguard image link not scrapped successfully", {error})
   } finally {
     await browser.close();
   }
@@ -111,8 +115,8 @@ export const getSportUrl = async () => {
     let imgLink = $('head link[rel="image_src"]').attr("href");
     imgLink = imgLink.replace(/\/\d+x\d+\/.*\.jpg$/, "/1135x1600/");
     return imgLink;
-  } catch (err) {
-    console.error(`${err.name}:${err.message}`);
+  } catch (error) {
+    log.error("complete sport image link not scrapped successfully", {error})
   } finally {
     await browser.close();
   }
