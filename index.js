@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
 import mongoose from "mongoose";
-import Logger from "./logger.js";
+import Logger from "./utils/logger";
 
 const log = Logger.child({module: "Hono Server"})
 
