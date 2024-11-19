@@ -22,8 +22,7 @@ import {
   getVanguardUrl,
 } from "../utils/link.grabber.js";
 import newspaperData from "../utils/newspaper.links.js";
-import Logger from "./logger.js";
-
+import Logger from "../utils/logger.js";
 
 const log = Logger.child({module: "Cron Job"})
 
