@@ -1,4 +1,4 @@
-import Logger from "../utils/logger"; 
+import Logger from "../utils/logger.js"; 
 const log = Logger.child({module: "Google Search"})
 const googleSearch = async (query) => {
   try {
