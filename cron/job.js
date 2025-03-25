@@ -48,8 +48,11 @@ const saveToArray = async (newspaperName, urlGrabberFunction) => {
     return;
   }
   const dataUrlString = await urlToBase64(uploadedLink);
+  log.info("Image converted to base64");
   const hash = await calculateHash(dataUrlString);
+  log.info("Hash calculated", { hash });
   const response = await analyzeImage(dataUrlString);
+  log.info("Image analyzed", { success: response.success });
   if (response.success && response.result) {
     const newspaperInfo = {
       date,
