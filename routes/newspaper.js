@@ -8,7 +8,6 @@ const app = new Hono();
 
 app.get("/", async (c) => {
   try {
-    console.log();
     let date = c.req.query("date");
     if (!date) {
       date = moment().format("YYYY-MM-DD");
@@ -19,22 +18,14 @@ app.get("/", async (c) => {
       }
     }
 
-    const data = await Entry.findOne({
-      date: date,
-    }).populate("newspapers");
+    const data = await Entry.findOne({ date }).populate("newspapers");
 
-    if (data && data.newspapers) {
-      return c.json({
-        success: true,
-        result: data.newspapers.map((newspaper) => ({
-          id: newspaper.id,
-          name: newspaper.name,
-          link: newspaper.link,
-        })),
-      });
-    }
-
-    return c.json({ success: true, result: [] });
+    return c.json({
+      success: true,
+      result:
+        data?.newspapers?.map(({ id, name, link }) => ({ id, name, link })) ||
+        [],
+    });
   } catch (err) {
     return c.json({ success: false, message: err.message }, 500);
   }
@@ -43,36 +34,35 @@ app.get("/", async (c) => {
 app.get("/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    const { date, name } = await Newspaper.findOne({ _id: id });
-    const data = await SearchResult.find(
-      {
-        newspaperId: id,
-      },
-    ).populate();
-    if (data && data.length > 0) {
-      return c.json({
-        success: true,
-        data: {
-          name,
-          date,
-          searchResult: data.map((item) => {
-            return {
-              headline: item.headline,
-              result: item.result.map((result) => {
-                return {
-                  title: result.title,
-                  link: result.link,
-                  snippet: result.snippet,
-                  tags: result.tags,
-                };
-              }),
-            };
-          }),
-        },
-      });
+    const newspaper = await Newspaper.findOne({ _id: id });
+
+    if (!newspaper) {
+      return c.json({ success: false, message: "Newspaper not found" }, 404);
     }
 
-    // return c.json({ success: false, message: "No results found" });
+    const { date, name } = newspaper;
+    const data = await SearchResult.find({ newspaperId: id }).populate();
+
+    if (!data.length) {
+      return c.json({ success: false, message: "No results found" }, 404);
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        name,
+        date,
+        searchResult: data.map(({ headline, result }) => ({
+          headline,
+          result: result.map(({ title, link, snippet, tags }) => ({
+            title,
+            link,
+            snippet,
+            tags,
+          })),
+        })),
+      },
+    });
   } catch (err) {
     return c.json({ success: false, message: err.message }, 500);
   }

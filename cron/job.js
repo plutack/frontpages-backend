@@ -22,9 +22,9 @@ import {
   getVanguardUrl,
 } from "../utils/link.grabber.js";
 import newspaperData from "../utils/newspaper.links.js";
-import Logger from "../utils/logger.js";
+import logger from "../utils/logger.js";
 
-const log = Logger.child({module: "Cron Job"})
+const log = logger.child({ module: "Cron Job" });
 
 // const time = process.env.CRON_TIME;
 const uri = process.env.MONGODB_URL;
@@ -35,16 +35,16 @@ let headlineSearchResults = {};
 
 // function to push  a newspaper docu // Only required if success is truement into a global array
 const saveToArray = async (newspaperName, urlGrabberFunction) => {
-  log.info("saving newspaper", {newspaper: newspaperName})
+  log.info("saving newspaper", { newspaper: newspaperName });
   const date = moment().format("YYYY-MM-DD");
   const imgUrl = await urlGrabberFunction();
   if (!imgUrl) {
-    log.warn("No link for newspaper", {newspaper: newspaperName});
+    log.warn("No link for newspaper", { newspaper: newspaperName });
     return;
   }
   const uploadedLink = await uploadImg(newspaperName, imgUrl);
   if (!uploadedLink) {
-    log.warn("No link for newspaper", {newspaper: newspaperName});
+    log.warn("No link for newspaper", { newspaper: newspaperName });
     return;
   }
   const dataUrlString = await urlToBase64(uploadedLink);
@@ -97,7 +97,7 @@ const saveOrUpdateEntry = async (newspapers, date) => {
       for (const newspaper of newspapers) {
         const { id } = await newspaper.save();
         newspapersID.push({ id, name: newspaper.name });
-        log.info("newspaper saved", {name: newspaper.name});
+        log.info("newspaper saved", { name: newspaper.name });
       }
       const entry = new Entry({
         date,
@@ -110,7 +110,7 @@ const saveOrUpdateEntry = async (newspapers, date) => {
         for (const searchResult of headlineSearchResults[newspaperName]) {
           await searchResult.save();
         }
-        log.info("headlines saved", {name: newspaperName});
+        log.info("headlines saved", { name: newspaperName });
       }
       return;
     }
@@ -135,7 +135,8 @@ const saveOrUpdateEntry = async (newspapers, date) => {
             headline.newspaperId = existingNewspaper._id;
             await headline.save();
           }
-        }}
+        }
+      }
       log.info("New entry saved to database", { date });
       for (const newspaperName of existingNewspaperArray) {
         newspapers = newspapers.filter(
@@ -148,10 +149,10 @@ const saveOrUpdateEntry = async (newspapers, date) => {
         SearchResult.insertMany(headlineSearchResults[newspaper.name]);
       }
       await existingEntry.save();
-      log.info("existing entry updated in database", {date});
+      log.info("existing entry updated in database", { date });
     }
   } catch (error) {
-    log.fatal("error connecting to database or saving entry", {error});
+    log.fatal("error connecting to database or saving entry", { error });
   } finally {
     await mongoose.disconnect();
     log.info("disconnected from database");
@@ -162,7 +163,7 @@ const job = new CronJob("50 9 * * *", async () => {
   const date = moment().format("YYYY-MM-DD");
   log.info("cron job started");
   try {
-   log.info("started cron job", { date });
+    log.info("started cron job", { date });
     for (const newspaperName of newspaperNames) {
       switch (newspaperName) {
         case "guardian":
@@ -187,7 +188,7 @@ const job = new CronJob("50 9 * * *", async () => {
     await saveOrUpdateEntry(newspapers, date);
     log.info("completed cron job successfully ");
   } catch (error) {
-    log.fatal("cron job failed", {error})
+    log.fatal("cron job failed", { err: error });
   } finally {
     newspapers = [];
     headlineSearchResults = {};
